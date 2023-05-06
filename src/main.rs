@@ -5,7 +5,7 @@ use rand::Rng;
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
-    /// Length of the generated phrase. Max is 2048.
+    /// Length of the generated phrase. [max: 2048].
     #[arg(short, long, default_value_t = 24)]
     length: u16,
 }
@@ -16,7 +16,7 @@ const NUM_WORDS: u16 = 2048;
 fn main() {
     let args = Args::parse();
     if args.length > NUM_WORDS {
-        panic!("Error: Max length is {}", NUM_WORDS)
+        println!("Error: Max length is {}", NUM_WORDS)
     }
 
     let mut words = get_words();
@@ -25,9 +25,9 @@ fn main() {
     for _ in 0..args.length {
         loop {
             let index = rng.gen_range(0..NUM_WORDS) as usize;
-            if let Some(word) = words.get(index).unwrap() {
-                chosen_words.push(word.clone());
-                words[index] = None;
+            let word = words.get_mut(index).unwrap();
+            if word.is_some() {
+                chosen_words.push(word.take().unwrap());
                 break;
             }
         }
