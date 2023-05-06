@@ -1,5 +1,5 @@
 use clap::Parser;
-use rand::Rng;
+use rand::{distributions::Uniform, prelude::Distribution};
 
 /// Simple program that generates a bip39 compatible mneumonic phrase.
 #[derive(Parser, Debug)]
@@ -20,11 +20,12 @@ fn main() {
     }
 
     let mut words = get_words();
+    let between = Uniform::from(0..NUM_WORDS);
     let mut rng = rand::thread_rng();
     let mut chosen_words: Vec<String> = Vec::with_capacity(args.length.into());
     for _ in 0..args.length {
         loop {
-            let index = rng.gen_range(0..NUM_WORDS) as usize;
+            let index = between.sample(&mut rng) as usize;
             let word = words.get_mut(index).unwrap();
             if word.is_some() {
                 chosen_words.push(word.take().unwrap());
